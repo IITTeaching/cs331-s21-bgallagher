@@ -43,8 +43,7 @@ class LinkedList:
         """Implements `x = self[idx]`"""
         assert(isinstance(idx, int))
         ### BEGIN SOLUTION
-        nidx = self._normalize_idx(idx)
-        self.cursor_set(nidx)
+        self.cursor_set(idx)
         return self.cursor.val
         ### END SOLUTION
 
@@ -119,10 +118,9 @@ class LinkedList:
         following node"""
         assert self.cursor is not self.head and len(self) > 0
         ### BEGIN SOLUTION
-        self.cursor_move(-1)
-        self.cursor.next = self.cursor.next.next
+        self.cursor.prior.next = self.cursor.next
+        self.cursor.next.prior = self.cursor.prior
         self.cursor_move(1)
-        self.cursor.prior = self.cursor.prior.prior
         self.length += -1
         ### END SOLUTION
 
@@ -134,11 +132,21 @@ class LinkedList:
         and enclosed by square brackets. E.g., for a list containing values
         1, 2 and 3, returns '[1, 2, 3]'."""
         ### BEGIN SOLUTION
+        temp = '['
+        for i in range(self.length-1):
+            temp += str(self[i])
+            temp += ', '
+
+        if self.length > 0:
+            temp += str(self[self.length-1])
+        temp += ']'
+        return temp
         ### END SOLUTION
 
     def __repr__(self):
         """Supports REPL inspection. (Same behavior as `str`.)"""
         ### BEGIN SOLUTION
+        return str(self)
         ### END SOLUTION
 
     ### single-element manipulation ###
@@ -148,18 +156,32 @@ class LinkedList:
         list, as needed. Note that inserting a value at len(self) --- equivalent
         to appending the value --- is permitted. Raises IndexError if idx is invalid."""
         ### BEGIN SOLUTION
+        if idx == self.length:
+            self.append(value)
+        else:
+            self.cursor_set(idx-1)
+            self.cursor_insert(value)
         ### END SOLUTION
 
     def pop(self, idx=-1):
         """Deletes and returns the element at idx (which is the last element,
         by default)."""
         ### BEGIN SOLUTION
+        temp = self[idx]
+        del self[idx]
+        return temp
         ### END SOLUTION
 
     def remove(self, value):
         """Removes the first (closest to the front) instance of value from the
         list. Raises a ValueError if value is not found in the list."""
         ### BEGIN SOLUTION
+        for i in range(self.length):
+            if self[i] == value:
+                del self[i]
+                break
+            if i == self.length-1:
+                raise ValueError('Value is not in the list')
         ### END SOLUTION
 
     ### predicates (T/F queries) ###
@@ -404,6 +426,7 @@ def test_single_element_manipulation():
         ins_idx = random.randrange(len(data)+1)
         data.insert(ins_idx, to_ins)
         lst.insert(ins_idx, to_ins)
+
 
     for i in range(100):
         tc.assertEqual(data[i], lst[i])
