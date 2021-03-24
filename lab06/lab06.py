@@ -51,6 +51,17 @@ def check_delimiters(expr):
     delim_closers = '})]>'
 
     ### BEGIN SOLUTION
+    s = Stack()
+    for c in expr:
+        if c in delim_openers:
+            s.push(c)
+        elif c in delim_closers:
+            try:
+                if delim_openers.index(s.top.val) == delim_closers.index(c):
+                    s.pop()
+            except:
+                return False
+    return s.empty()
     ### END SOLUTION
 
 ################################################################################
@@ -121,6 +132,44 @@ def infix_to_postfix(expr):
     postfix = []
     toks = expr.split()
     ### BEGIN SOLUTION
+    for c in toks:
+        if c.isdigit():
+            postfix.append(c)
+        elif ops.peek() == None or ops.peek() == '(':
+            ops.push(c)
+        elif c == '(':
+            ops.push(c)
+        elif c == ')':
+            x = ops.pop()
+            while x != '(':
+                postfix.append(x)
+                x = ops.pop()
+        elif prec[c] > prec[ops.peek()]:
+            ops.push(c)
+        elif prec[c] == prec[ops.peek()]:
+            postfix.append(ops.pop())
+            ops.push(c)
+        elif prec[c] < prec[ops.peek()]:
+            postfix.append(ops.pop())
+            comp = True
+            while comp:
+                if prec[c] > prec[ops.peek()]:
+                    ops.push(c)
+                    comp == False
+                elif prec[c] == prec[ops.peek()]:
+                    postfix.append(ops.pop())
+                    ops.push(c)
+                    comp = False
+                elif prec[c] < prec[ops.peek()]:
+                    postfix.append(ops.pop())
+            
+                
+    for i in ops:
+        postfix.append(ops.pop())
+
+
+
+            
     ### END SOLUTION
     return ' '.join(postfix)
 
@@ -155,7 +204,7 @@ def test_infix_to_postfix_3():
 ################################################################################
 # QUEUE IMPLEMENTATION
 ################################################################################
-class Queue:
+'''class Queue:
     def __init__(self, limit=10):
         self.data = [None] * limit
         self.head = -1
@@ -194,7 +243,7 @@ class Queue:
 
     def __iter__(self):
         ### BEGIN SOLUTION
-        ### END SOLUTION
+        ### END SOLUTION'''
 
 ################################################################################
 # QUEUE IMPLEMENTATION - TEST CASES
