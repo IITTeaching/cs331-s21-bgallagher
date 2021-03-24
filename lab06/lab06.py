@@ -133,37 +133,28 @@ def infix_to_postfix(expr):
     toks = expr.split()
     ### BEGIN SOLUTION
     for c in toks:
-        if c.isdigit():
-            postfix.append(c)
-        elif ops.peek() == None or ops.peek() == '(':
-            ops.push(c)
-        elif c == '(':
-            ops.push(c)
-        elif c == ')':
-            x = ops.pop()
-            while x != '(':
-                postfix.append(x)
+        nxt = False
+        while not nxt:
+            nxt = True
+            if c.isdigit():
+                postfix.append(c)
+            elif ops.peek() == None or ops.peek() == '(':
+                ops.push(c)
+            elif c == '(':
+                ops.push(c)
+            elif c == ')':
                 x = ops.pop()
-        elif prec[c] > prec[ops.peek()]:
-            ops.push(c)
-        elif prec[c] == prec[ops.peek()]:
-            postfix.append(ops.pop())
-            ops.push(c)
-        elif prec[c] < prec[ops.peek()]:
-            postfix.append(ops.pop())
-            comp = True
-            while comp:
-                if prec[c] > prec[ops.peek()]:
-                    ops.push(c)
-                    comp == False
-                elif prec[c] == prec[ops.peek()]:
-                    postfix.append(ops.pop())
-                    ops.push(c)
-                    comp = False
-                elif prec[c] < prec[ops.peek()]:
-                    postfix.append(ops.pop())
-            
-                
+                while x != '(':
+                    postfix.append(x)
+                    x = ops.pop()
+            elif prec[c] > prec[ops.peek()]:
+                ops.push(c)
+            elif prec[c] == prec[ops.peek()]:
+                postfix.append(ops.pop())
+                ops.push(c)
+            elif prec[c] < prec[ops.peek()]:
+                postfix.append(ops.pop())
+                nxt = False           
     for i in ops:
         postfix.append(ops.pop())
 
@@ -204,30 +195,58 @@ def test_infix_to_postfix_3():
 ################################################################################
 # QUEUE IMPLEMENTATION
 ################################################################################
-'''class Queue:
+class Queue:
     def __init__(self, limit=10):
         self.data = [None] * limit
         self.head = -1
         self.tail = -1
 
     ### BEGIN SOLUTION
+        self.count = 0
+        self.limit = limit
     ### END SOLUTION
 
     def enqueue(self, val):
         ### BEGIN SOLUTION
+        if self.count == self.limit:
+            raise RuntimeError
+        else:
+            if self.head == -1:
+                self.head = 0
+            self.count += 1
+            self.tail = (self.tail + 1) % self.limit
+            self.data[self.tail] = val
         ### END SOLUTION
 
     def dequeue(self):
         ### BEGIN SOLUTION
+        if self.count == 0:
+            raise RuntimeError
+        else:
+            x = self.data[self.head]
+            self.data[self.head] = None
+            self.head = (self.head + 1) % self.limit
+            self.count -= 1
+            if self.count == 0:
+                self.head = -1
+            return x
         ### END SOLUTION
 
     def resize(self, newsize):
         assert(len(self.data) < newsize)
         ### BEGIN SOLUTION
+        newdata = [None] * newsize
+        for i, item in enumerate(self):
+            newdata[i] = item
+        self.data = newdata
+        self.head = 0
+        self.tail = self.count - 1
+        self.limit = newsize
         ### END SOLUTION
 
     def empty(self):
         ### BEGIN SOLUTION
+        return self.count == 0
         ### END SOLUTION
 
     def __bool__(self):
@@ -243,7 +262,11 @@ def test_infix_to_postfix_3():
 
     def __iter__(self):
         ### BEGIN SOLUTION
-        ### END SOLUTION'''
+        i = 0
+        while i < self.limit:
+            yield self.data[(self.head + i) % self.limit]
+            i += 1
+        ### END SOLUTION
 
 ################################################################################
 # QUEUE IMPLEMENTATION - TEST CASES
