@@ -14,14 +14,39 @@ class ExtensibleHashTable:
 
     def find_bucket(self, key):
         # BEGIN_SOLUTION
+        idx = key % self.n_buckets
+        while self.buckets[i] != None:
+            if self.buckets[i][0] == key:
+                return self.buckets[idx]
+            idx += 1
+            idx %= self.n_buckets
         # END_SOLUTION
 
     def __getitem__(self,  key):
         # BEGIN_SOLUTION
+        return self.find_bucket(key)[1]
         # END_SOLUTION
 
     def __setitem__(self, key, value):
         # BEGIN_SOLUTION
+        idx = key % self.n_buckets
+        while self.buckets[idx] != None and self.buckets[idx][0] != key:
+            idx += 1
+            idx %= self.n_buckets
+        self.buckets[i] = [key, value]
+        self.nitems += 1
+
+        if self.nitems == self.n_buckets * self.fillfactor:
+            self.n_buckets = self.n_buckets * 2
+            newBuckets = [None] * self.n_buckets
+            for i in range(self.n_buckets // 2):
+                if self.buckets[i] != None:
+                    idx = self.buckets[i][0] % self.n_buckets
+                    while newBuckets[idx] != None:
+                        idx += 1
+                        idx %= self.n_buckets
+                    newBuckets[idx] = self.buckets[i]
+            self.buckets = newBuckets
         # END_SOLUTION
 
     def __delitem__(self, key):
