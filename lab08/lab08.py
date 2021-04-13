@@ -24,10 +24,29 @@ class Heap:
 
     def heapify(self, idx=0):
         ### BEGIN SOLUTION
+        l = self._left(idx)
+        r = self._right(idx)
+        if l < len(self.data) and self.key(self.data[l]) > self.key(self.data[idx]):
+            maxidx = l
+        else:
+            maxidx = idx
+        if r < len(self.data) and self.key(self.data[r]) > self.key(self.data[maxidx]):
+            maxidx = r
+        if maxidx != idx:
+            self.data[idx], self.data[maxidx] = self.data[maxidx], self.data[idx]
+            if l < len(self.data):
+                self.heapify(l)
+            if r < len(self.data):
+                self.heapify(r)
         ### END SOLUTION
 
     def add(self, x):
         ### BEGIN SOLUTION
+        self.data.append(x)
+        idx = len(self.data) - 1
+        while idx > 0 and self.key(self.data[self._parent(idx)]) < self.key(x):
+            self.data[idx], self.data[self._parent(idx)] = self.data[self._parent(idx)], self.data[idx]
+            idx = self._parent(idx)
         ### END SOLUTION
 
     def peek(self):
@@ -130,6 +149,20 @@ def test_key_heap_5():
 ################################################################################
 def running_medians(iterable):
     ### BEGIN SOLUTION
+    max_heap = Heap(key = lambda x:-x)
+    min_heap = Heap()
+    medians = [0] * len(iterable)
+    for i, x in enumerate(iterable):
+        min_heap.add(x)
+        max_heap.add(min_heap.pop())
+        if len(max_heap) > len(min_heap):
+            min_heap.add(max_heap.peek())
+            max_heap.pop()
+        if len(min_heap) == len(max_heap):
+            medians[i] = (min_heap.peek() + max_heap.peek()) / 2
+        else:
+            medians[i] = min_heap.peek()
+    return medians
     ### END SOLUTION
 
 ################################################################################
@@ -174,6 +207,14 @@ def test_median_3():
 ################################################################################
 def topk(items, k, keyf):
     ### BEGIN SOLUTION
+    heap = Heap(keyf)
+    lst = [0] * k
+    for i in items:
+        heap.add(i)
+    for i in range(k):
+        lst[i] = heap.pop()
+    return lst
+
     ### END SOLUTION
 
 ################################################################################
