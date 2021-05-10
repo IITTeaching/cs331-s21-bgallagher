@@ -21,7 +21,7 @@ def sort(lst, d = 0):
     else:
         for i in range(1, l):
             for j in range(1, l):
-                if lst[j-1][d].encode('ascii') > lst[j][d].encode('ascii') and lst[j-1][d-1] == lst[j][d-1]:
+                if lst[j-1][d].encode('ascii', 'replace') > lst[j][d].encode('ascii', 'replace') and lst[j-1][d-1] == lst[j][d-1]:
                     lst[j], lst[j-1] = lst[j-1], lst[j]
     
 
