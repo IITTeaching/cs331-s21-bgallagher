@@ -34,19 +34,3 @@ def radix_sort(lst, s = 35):
         sort(lst, d)
     for j in range(len(lst)):
         lst[j] = lst[j].replace(' ', '')
-
-    
-
-
-################################################
-#TESTING
-################################################
-    
-def main():
-    lst = ['peepoo', 'ball', 'poo', 'fart', 'penis', 'cum', 'poopoo', 'poopee', 'bitch', 'poop']
-    radix_sort(lst)
-    print(lst)
-    print(radix_a_book(book_url='https://www.gutenberg.org/files/84/84-0.txt')[0:200])
-
-if __name__ == '__main__':
-    main()
